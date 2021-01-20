@@ -1,23 +1,79 @@
 package com.example.xiangtest
 
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.example.xiangtest.Bean.Student
+import com.example.xiangtest.model.StudentViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
+    var studentViewModel: StudentViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
+        val function: (v: View) -> Unit = { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+                .setAction("Action", null).show()
         }
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener(function)
+
+        //数据库的操作应该是在子线程
+//        var t = DbTest(applicationContext)
+//        t.start()
+
+//        val instance = AppDatabase.getInstance(applicationContext)
+//        val dao = instance.userDao()
+//
+//        dao.insert(Student("jett", "123", 1))
+//        dao.insert(Student("jett1", "123", 2))
+//        dao.insert(Student("jett2", "123", 3))
+//        dao.insert(Student("jett3", "123", 4))
+//
+//        val list: List<Student> = dao.getAll()
+//        Log.i("jett", list.toString())
+//
+//        val jett2: Student = dao.findByName("jett3")
+//        Log.i("jett2", jett2.toString())
+//        val allId: List<Student> = dao.getAllId(intArrayOf(2, 3, 4))
+//        Log.i("jett", allId.toString())
+//
+//        val record: List<StudentTuple> = dao.getRecord()
+ //       Log.i("jett", record.toString())
+
+        studentViewModel = ViewModelProviders.of(this).get(StudentViewModel::class.java)
+        studentViewModel?.getAllLiveDataStudent()?.observe(this, Observer {
+            Log.i("jett", it.toString())
+            //Log.i("jett name", it?.get(5).name)
+        })
+
+
+        for (i in 0..49) {
+            studentViewModel?.insert(Student("jett", "123", 1))
+        }
+
+//        object : Thread() {
+//            override fun run() {
+//                for (i in 0..49) {
+//                    try {
+//                        sleep(1000)
+//                    } catch (e: Exception) {
+//                        e.printStackTrace()
+//                    }
+//                    studentViewModel?.update(Student(6, "jett$i", "123", 1))
+//                }
+//            }
+//        }.start()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -35,4 +91,31 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+
+//    class DbTest(var applicationContext: Context) : Thread() {
+//
+//        override fun run() {
+//            super.run()
+//            //数据库的操作都在这里进行
+//            var jettDB = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "jettDB").build()
+//            var dao: StudentDao = jettDB.userDao()
+//
+//            dao.insert(Student("jett", "123", 1))
+//            dao.insert(Student("jett1", "123", 2))
+//            dao.insert(Student("jett2", "123", 3))
+//            dao.insert(Student("jett3", "123", 4))
+//
+//            val list: List<Student> = dao.getAll()
+//            Log.i("jett", list.toString())
+//
+//            val jett2: Student = dao.findByName("jett3")
+//            Log.i("jett2", jett2.toString())
+//            val allId: List<Student> = dao.getAllId(intArrayOf(2, 3, 4))
+//            Log.i("jett", allId.toString())
+//
+//            val record: List<StudentTuple> = dao.getRecord()
+//            Log.i("jett", record.toString())
+//        }
+//    }
 }
