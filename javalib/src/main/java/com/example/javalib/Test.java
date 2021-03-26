@@ -3,12 +3,13 @@ package com.example.javalib;
 public class Test {
 
 
-
     public static void main(String[] args) {
 
-       // System.out.println(t);
+        System.err.println("he" + "llo" == "hello");  // true
 
-        Array<String> stringArray = new Array<>() ;
+        System.err.println("he" + new String("llo") == "hello");//false
+        System.err.println(("he" + new String("llo")).equals("hello") );//true
+
     }
 
 }

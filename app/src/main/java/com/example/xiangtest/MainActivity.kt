@@ -1,29 +1,39 @@
 package com.example.xiangtest
 
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.os.RemoteException
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.testbyxiang.IMyAidlInterface
 import com.example.xiangtest.Bean.Student
 import com.example.xiangtest.model.StudentViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
+
 class MainActivity : AppCompatActivity() {
 
     var studentViewModel: StudentViewModel? = null
+    private var iMyAidlInterface: IMyAidlInterface? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
         val function: (v: View) -> Unit = { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Replace with your own action :"+ iMyAidlInterface?.name.toString(), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
+                Log.e("jett", "传递的值:"+ iMyAidlInterface?.name)
         }
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener(function)
 
@@ -73,6 +83,27 @@ class MainActivity : AppCompatActivity() {
 //                }
 //            }
 //        }.start()
+
+
+        //需要显示调用
+        var intent = Intent()
+//
+        intent.action = "com.example.testbyxiang.myservice" //MyService 的 filter
+        intent.`package` = "com.example.testbyxiang"
+        //startService(intent)
+        bindService(intent, object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                Log.e("jett", "onServiceConnected: " )
+
+                iMyAidlInterface = IMyAidlInterface.Stub.asInterface(service)
+                Log.e("jett", "传递的值:"+ iMyAidlInterface?.name)
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                //iMyAidlInterface = null
+
+            }
+        }, BIND_AUTO_CREATE)
 
     }
 
